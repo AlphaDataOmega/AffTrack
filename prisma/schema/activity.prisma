@@ -1,0 +1,42 @@
+// Activity logging models
+
+model Activity {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  type        ActivityType
+  action      ActivityAction
+  targetType  String   // The type of entity being acted upon
+  targetId    String   // The ID of the entity being acted upon
+  details     String?  // Human-readable description
+  metadata    Json?    // Additional activity data
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+}
+
+enum ActivityType {
+  USER
+  TRAFFIC_SOURCE
+  LANDING_PAGE
+  AD_PLACEMENT
+  OFFER
+  TRACKING_LINK
+  SPLIT_TEST
+  TRANSFER_FEED
+  TRANSFER_PARTNER
+  SYSTEM
+}
+
+enum ActivityAction {
+  CREATE
+  UPDATE
+  DELETE
+  ACTIVATE
+  DEACTIVATE
+  CONFIGURE
+  LOGIN
+  LOGOUT
+  TRANSFER
+  CONVERSION
+}

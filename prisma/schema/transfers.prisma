@@ -1,0 +1,89 @@
+// Transfer management models
+
+model TransferPartner {
+  id          String   @id @default(cuid())
+  name        String
+  website     String?
+  apiEndpoint String?
+  username    String?
+  password    String? // Encrypted
+  description String?
+  status      Status   @default(ACTIVE)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  transferFeeds TransferFeed[]
+}
+
+model TransferFeed {
+  id                String   @id @default(cuid())
+  name              String
+  partnerId         String
+  partner           TransferPartner @relation(fields: [partnerId], references: [id])
+  method            String   // POST, PUT, PATCH
+  endpoint          String
+  headers           Json?    // Request headers
+  bodyTemplate      String   // JSON template with placeholders
+  successPattern    String   // Pattern to match in response
+  prePingEnabled    Boolean  @default(false)
+  prePingConfig     Json?    // Pre-ping configuration
+  payoutType        PayoutType @default(STATIC)
+  payoutValue       Float?   // For static payouts
+  payoutPath        String?  // JSON path for dynamic payouts
+  transferTiming    TransferTiming @default(REALTIME)
+  scheduleConfig    Json?    // Day parting and scheduling config
+  capConfig         Json?    // Transfer caps configuration
+  conditions        Json?    // Transfer conditions
+  status           Status    @default(ACTIVE)
+  userId           String
+  user             User      @relation(fields: [userId], references: [id])
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  // Relations
+  transfers Transfer[]
+}
+
+enum PayoutType {
+  STATIC
+  DYNAMIC
+}
+
+enum TransferTiming {
+  REALTIME
+  AGED30
+  AGED60
+  AGED90
+}
+
+model Transfer {
+  id            String   @id @default(cuid())
+  feedId        String
+  feed          TransferFeed @relation(fields: [feedId], references: [id])
+  leadId        String
+  lead          Lead     @relation(fields: [leadId], references: [id])
+  status        TransferStatus @default(PENDING)
+  response      Json?    // Raw response from partner
+  responseCode  Int?     // HTTP response code
+  errorMessage  String?
+  retryCount    Int      @default(0)
+  prePingId     String?  // ID from pre-ping validation
+  payout        Float?   // Actual payout amount
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  conversions Conversion[]
+}
+
+enum TransferStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  DUPLICATE
+  ERROR
+  RETRY
+}

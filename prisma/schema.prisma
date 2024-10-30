@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Import modular schema files
+/// Base types and user management
+include "schema/base.prisma"
+
+/// Tracking related models
+include "schema/tracking.prisma"
+
+/// Asset management models
+include "schema/assets.prisma"
+
+/// Transfer management models
+include "schema/transfers.prisma"
+
+/// Split testing models
+include "schema/testing.prisma"
+
+/// Activity logging models
+include "schema/activity.prisma"

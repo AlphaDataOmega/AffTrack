@@ -1,0 +1,42 @@
+// Base types and enums shared across modules
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  USER
+}
+
+enum Status {
+  ACTIVE
+  PAUSED
+  EXPIRED
+  DELETED
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String
+  role          UserRole  @default(USER)
+  emailVerified DateTime?
+  image         String?
+  active        Boolean   @default(true)
+  lastLoginAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Auth.js relations
+  accounts      Account[]
+  sessions      Session[]
+
+  // App relations
+  trafficSources   TrafficSource[]
+  landingPages     LandingPage[]
+  adPlacements     AdPlacement[]
+  affiliateOffers  AffiliateOffer[]
+  trackingLinks    TrackingLink[]
+  splitTests       SplitTest[]
+  transferFeeds    TransferFeed[]
+  transferPartners TransferPartner[]
+  activities       Activity[]
+}

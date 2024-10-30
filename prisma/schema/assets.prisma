@@ -1,0 +1,115 @@
+// Asset management models
+
+model TrafficSource {
+  id          String   @id @default(cuid())
+  name        String
+  type        String   // SOCIAL_MEDIA, SEARCH_ENGINE, EMAIL, etc.
+  description String?
+  status      Status   @default(ACTIVE)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  visits        Visit[]
+  trackingLinks TrackingLink[]
+}
+
+model LandingPage {
+  id          String   @id @default(cuid())
+  name        String
+  url         String
+  description String?
+  status      Status   @default(ACTIVE)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  visits        Visit[]
+  trackingLinks TrackingLink[]
+}
+
+model AdPlacement {
+  id          String   @id @default(cuid())
+  name        String
+  type        PlacementType
+  size        String?  // For banner ads
+  location    String?  // URL or description of placement
+  targetType  TargetType // OFFER or SPLIT_TEST
+  offerId     String?
+  offer       AffiliateOffer? @relation(fields: [offerId], references: [id])
+  splitTestId String?
+  splitTest   SplitTest? @relation(fields: [splitTestId], references: [id])
+  status      Status   @default(ACTIVE)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  trackingLinks TrackingLink[]
+}
+
+enum PlacementType {
+  BANNER
+  NATIVE
+  POPUP
+  WIDGET
+  VIDEO
+  SOCIAL_POST
+}
+
+enum TargetType {
+  OFFER
+  SPLIT_TEST
+}
+
+model AffiliateOffer {
+  id          String   @id @default(cuid())
+  name        String
+  network     String   // Network name or "Internal"
+  type        OfferType
+  payout      Float
+  description String?
+  status      Status   @default(ACTIVE)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  adPlacements   AdPlacement[]
+  trackingLinks  TrackingLink[]
+  splitTests     SplitTestVariant[]
+  conversions    Conversion[]
+}
+
+enum OfferType {
+  CPA
+  CPL
+  CPC
+  REVSHARE
+}
+
+model TrackingLink {
+  id              String   @id @default(cuid())
+  name            String?
+  trafficSourceId String
+  trafficSource   TrafficSource @relation(fields: [trafficSourceId], references: [id])
+  landingPageId   String
+  landingPage     LandingPage @relation(fields: [landingPageId], references: [id])
+  placementId     String?
+  placement       AdPlacement? @relation(fields: [placementId], references: [id])
+  offerId         String?
+  offer           AffiliateOffer? @relation(fields: [offerId], references: [id])
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  clicks Click[]
+}

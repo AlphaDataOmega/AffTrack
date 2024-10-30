@@ -1,0 +1,18 @@
+export const AVAILABLE_PARAMETERS = [
+  { label: "First Name", value: "{firstName}" },
+  { label: "Last Name", value: "{lastName}" },
+  { label: "Email", value: "{email}" },
+  { label: "Phone", value: "{phone}" },
+  { label: "Address", value: "{address}" },
+  { label: "City", value: "{city}" },
+  { label: "State", value: "{state}" },
+  { label: "Zip Code", value: "{zipcode}" },
+  { label: "Birth Month", value: "{dob_mm}" },
+  { label: "Birth Day", value: "{dob_dd}" },
+  { label: "Birth Year", value: "{dob_yyyy}" },
+  { label: "UTM Source", value: "{utm_source}" },
+  { label: "UTM Medium", value: "{utm_medium}" },
+  { label: "UTM Campaign", value: "{utm_campaign}" },
+  { label: "UTM Term", value: "{utm_term}" },
+  { label: "UTM Content", value: "{utm_content}" },
+];

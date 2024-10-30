@@ -1,0 +1,30 @@
+// Split testing models
+
+model SplitTest {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  status      Status   @default(ACTIVE)
+  startDate   DateTime?
+  endDate     DateTime?
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  variants      SplitTestVariant[]
+  adPlacements  AdPlacement[]
+}
+
+model SplitTestVariant {
+  id          String   @id @default(cuid())
+  splitTestId String
+  splitTest   SplitTest @relation(fields: [splitTestId], references: [id])
+  offerId     String
+  offer       AffiliateOffer @relation(fields: [offerId], references: [id])
+  name        String
+  weight      Int      @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

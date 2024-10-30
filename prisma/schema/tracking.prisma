@@ -1,0 +1,114 @@
+// Tracking related models
+
+model Visit {
+  id              String    @id @default(cuid())
+  ipAddress       String
+  userAgent       String
+  referer         String?
+  landingPageId   String
+  landingPage     LandingPage @relation(fields: [landingPageId], references: [id])
+  trafficSourceId String?
+  trafficSource   TrafficSource? @relation(fields: [trafficSourceId], references: [id])
+  utmSource       String?
+  utmMedium       String?
+  utmCampaign     String?
+  utmContent      String?
+  utmTerm         String?
+  country         String?
+  region          String?
+  city            String?
+  timeOnSite      Int?      // In seconds
+  pageViews       Int       @default(1)
+  bounced         Boolean   @default(false)
+  convertedToLead Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  clicks      Click[]
+  leads       Lead[]
+  conversions Conversion[]
+}
+
+model Click {
+  id             String    @id @default(cuid())
+  visitId        String
+  visit          Visit     @relation(fields: [visitId], references: [id])
+  trackingLinkId String
+  trackingLink   TrackingLink @relation(fields: [trackingLinkId], references: [id])
+  ipAddress      String
+  userAgent      String
+  referer        String?
+  utmSource      String?
+  utmMedium      String?
+  utmCampaign    String?
+  utmContent     String?
+  utmTerm        String?
+  createdAt      DateTime  @default(now())
+
+  // Relations
+  leads       Lead[]
+  conversions Conversion[]
+}
+
+model Lead {
+  id            String    @id @default(cuid())
+  visitId       String
+  visit         Visit     @relation(fields: [visitId], references: [id])
+  clickId       String?
+  click         Click?    @relation(fields: [clickId], references: [id])
+  firstName     String
+  lastName      String
+  email         String
+  phone         String?
+  ipAddress     String
+  userAgent     String
+  country       String?
+  region        String?
+  city          String?
+  duplicateOf   String?   // ID of original lead if this is a duplicate
+  status        LeadStatus @default(NEW)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  transfers    Transfer[]
+  conversions  Conversion[]
+  customFields Json?      // Store additional dynamic fields
+}
+
+enum LeadStatus {
+  NEW
+  QUALIFIED
+  DUPLICATE
+  INVALID
+  TRANSFERRED
+  CONVERTED
+}
+
+model Conversion {
+  id            String    @id @default(cuid())
+  visitId       String
+  visit         Visit     @relation(fields: [visitId], references: [id])
+  clickId       String
+  click         Click     @relation(fields: [clickId], references: [id])
+  leadId        String
+  lead          Lead      @relation(fields: [leadId], references: [id])
+  offerId       String
+  offer         AffiliateOffer @relation(fields: [offerId], references: [id])
+  transferId    String?
+  transfer      Transfer? @relation(fields: [transferId], references: [id])
+  value         Float
+  status        ConversionStatus @default(COMPLETED)
+  transactionId String?   // External transaction ID
+  metadata      Json?     // Additional conversion data
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+enum ConversionStatus {
+  COMPLETED
+  PENDING
+  REJECTED
+  REFUNDED
+}
